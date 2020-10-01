@@ -1,5 +1,7 @@
 FROM quay.io/forem/ruby:2.7.1
 
+ARG RAILS_ENV
+
 USER root
 
 RUN curl -sL https://dl.yarnpkg.com/rpm/yarn.repo -o /etc/yum.repos.d/yarn.repo && \
@@ -8,6 +10,8 @@ RUN curl -sL https://dl.yarnpkg.com/rpm/yarn.repo -o /etc/yum.repos.d/yarn.repo 
                    postgresql postgresql-devel ruby-devel tzdata yarn \
                    && dnf -y clean all \
                    && rm -rf /var/cache/yum
+
+RUN if [ "$RAILS_ENV" = "test" ] ; then yum -y install chromedriver chromium gnu-free-sans-fonts xorg-x11-server-Xvfb && yum clean all && : ; fi
 
 ENV APP_USER=forem
 ENV APP_UID=1000
@@ -49,7 +53,7 @@ RUN mkdir -p "${APP_HOME}"/public/{assets,images,packs,podcasts,uploads}
 
 COPY . "${APP_HOME}"/
 
-RUN RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile
+RUN if [ "$RAILS_ENV" != "test" ] ; then RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile ; fi
 
 RUN echo $(date -u +'%Y-%m-%dT%H:%M:%SZ') >> "${APP_HOME}"/FOREM_BUILD_DATE && \
     echo $(git rev-parse --short HEAD) >> "${APP_HOME}"/FOREM_BUILD_SHA && \

@@ -20,6 +20,16 @@ RSpec.configure do |config|
 
       driven_by :selenium, using: :chrome, screen_size: [1400, 2000], options: { url: ENV["SELENIUM_URL"] }
     else
+      Capybara.register_driver :selenium_chrome_headless do |app|
+        browser_options = ::Selenium::WebDriver::Chrome::Options.new
+        browser_options.args << "--no-sandbox"
+        browser_options.args << "--window-size=1400,2000"
+        browser_options.args << "--disable-dev-shm-usage"
+        browser_options.headless!
+
+        Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
+      end
+
       # options from https://github.com/teamcapybara/capybara#selenium
       chrome = ENV["HEADLESS"] == "false" ? :selenium_chrome : :selenium_chrome_headless
       driven_by chrome
