@@ -14,7 +14,7 @@ services:
       - db
       - elasticsearch
       - redis
-      - yarn
+#      - yarn
     environment:
       RAILS_ENV: test
       RAILS_SYSTEM_TESTING_SCREENSHOT: inline
@@ -56,29 +56,29 @@ services:
     entrypoint: ["bash"]
     command: ["./scripts/bundle.sh"]
 
-  webpacker:
-    image: forem-test:latest
-    container_name: forem_webpacker
-    depends_on:
-      - rails
-      - yarn
-    environment:
-      RAILS_ENV: test
-      REDIS_SIDEKIQ_URL: redis://redis:6379
-      DATABASE_URL: postgresql://forem:forem@db:5432/PracticalDeveloper_test
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-    entrypoint: ["dockerize", "-wait", "file:///opt/apps/forem/node_modules/.bin/webpack-dev-server", "-timeout", "2700s"]
-    command: ["./bin/webpack-dev-server"]
+  # webpacker:
+  #   image: forem-test:latest
+  #   container_name: forem_webpacker
+  #   depends_on:
+  #     - rails
+  #     - yarn
+  #   environment:
+  #     RAILS_ENV: test
+  #     REDIS_SIDEKIQ_URL: redis://redis:6379
+  #     DATABASE_URL: postgresql://forem:forem@db:5432/PracticalDeveloper_test
+  #     ELASTICSEARCH_URL: http://elasticsearch:9200
+  #   entrypoint: ["dockerize", "-wait", "file:///opt/apps/forem/node_modules/.bin/webpack-dev-server", "-timeout", "2700s"]
+  #   command: ["./bin/webpack-dev-server"]
 
-  yarn:
-    image: forem-test:latest
-    container_name: forem_yarn
-    environment:
-      RAILS_ENV: test
-    entrypoint: ["bash", "-c"]
-    volumes:
-      - .:/opt/apps/forem:delegated
-    command: ["yarn install --dev"]
+  # yarn:
+  #   image: forem-test:latest
+  #   container_name: forem_yarn
+  #   environment:
+  #     RAILS_ENV: test
+  #   entrypoint: ["bash", "-c"]
+  #   volumes:
+  #     - .:/opt/apps/forem:delegated
+  #   command: ["yarn install --dev"]
 
   db:
     image: postgres:11-alpine
