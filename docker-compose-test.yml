@@ -17,7 +17,7 @@ services:
 #      - yarn
     environment:
       RAILS_ENV: test
-      RAILS_SYSTEM_TESTING_SCREENSHOT: inline
+      # RAILS_SYSTEM_TESTING_SCREENSHOT: inline
       DATABASE_URL: postgresql://forem:forem@db:5432/PracticalDeveloper_test
       ELASTICSEARCH_URL: http://elasticsearch:9200
       REDIS_URL: redis://redis:6379
