@@ -9,7 +9,6 @@ services:
     container_name: forem_rails
     ports:
       - "3000:3000"
-      - "43447:43447"
     depends_on:
       - bundle
       - db
@@ -18,6 +17,7 @@ services:
       - yarn
     environment:
       RAILS_ENV: test
+      RAILS_SYSTEM_TESTING_SCREENSHOT: inline
       DATABASE_URL: postgresql://forem:forem@db:5432/PracticalDeveloper_test
       ELASTICSEARCH_URL: http://elasticsearch:9200
       REDIS_URL: redis://redis:6379
@@ -40,7 +40,7 @@ services:
       KNAPSACK_PRO_FIXED_QUEUE_SPLIT: "true"
       KNAPSACK_PRO_LOG_LEVEL: info
       KNAPSACK_PRO_CI_NODE_TOTAL: 3
-      KNAPSACK_PRO_TEST_FILE_PATTERN: "spec/system/user_uses_the_editor_spec.rb"
+      KNAPSACK_PRO_TEST_FILE_PATTERN: "spec/system/user/*.rb"
       COVERAGE_REPORTS_TOTAL: 4
     volumes:
       - .:/opt/apps/forem:delegated
@@ -56,6 +56,20 @@ services:
     entrypoint: ["bash"]
     command: ["./scripts/bundle.sh"]
 
+  webpacker:
+    image: forem-test:latest
+    container_name: forem_webpacker
+    depends_on:
+      - rails
+      - yarn
+    environment:
+      RAILS_ENV: test
+      REDIS_SIDEKIQ_URL: redis://redis:6379
+      DATABASE_URL: postgresql://forem:forem@db:5432/PracticalDeveloper_test
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    entrypoint: ["dockerize", "-wait", "file:///opt/apps/forem/node_modules/.bin/webpack-dev-server", "-timeout", "2700s"]
+    command: ["./bin/webpack-dev-server"]
+
   yarn:
     image: forem-test:latest
     container_name: forem_yarn
@@ -64,7 +78,6 @@ services:
     entrypoint: ["bash", "-c"]
     volumes:
       - .:/opt/apps/forem:delegated
-    entrypoint: ["bash", "-c"]
     command: ["yarn install --dev"]
 
   db:

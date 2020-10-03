@@ -55,6 +55,9 @@ COPY . "${APP_HOME}"/
 
 RUN if [ "$RAILS_ENV" != "test" ] ; then RAILS_ENV=production NODE_ENV=production bundle exec rake assets:precompile ; fi
 
+RUN yarn install --frozen-lockfile
+RUN bundle exec rails webpacker:compile
+
 RUN echo $(date -u +'%Y-%m-%dT%H:%M:%SZ') >> "${APP_HOME}"/FOREM_BUILD_DATE && \
     echo $(git rev-parse --short HEAD) >> "${APP_HOME}"/FOREM_BUILD_SHA && \
     rm -rf "${APP_HOME}"/.git/
