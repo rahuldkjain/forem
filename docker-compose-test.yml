@@ -42,8 +42,6 @@ services:
       KNAPSACK_PRO_CI_NODE_TOTAL: 3
       KNAPSACK_PRO_TEST_FILE_PATTERN: "spec/system/user/*.rb"
       COVERAGE_REPORTS_TOTAL: 4
-    volumes:
-      - .:/opt/apps/forem:delegated
     entrypoint: ["dockerize", "-wait", "tcp://db:5432", "-wait", "http://elasticsearch:9200", "-wait", "tcp://redis:6379", "-timeout", "2700s", "./scripts/entrypoint-dev.sh"]
 
   bundle:
@@ -51,8 +49,6 @@ services:
     container_name: forem_bundle
     environment:
       RAILS_ENV: test
-    volumes:
-      - .:/opt/apps/forem:delegated
     entrypoint: ["bash"]
     command: ["./scripts/bundle.sh"]
 
@@ -76,8 +72,6 @@ services:
   #   environment:
   #     RAILS_ENV: test
   #   entrypoint: ["bash", "-c"]
-  #   volumes:
-  #     - .:/opt/apps/forem:delegated
   #   command: ["yarn install --dev"]
 
   db:
